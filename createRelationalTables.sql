@@ -1,18 +1,24 @@
+set foreign_key_checks = 0;
+drop table if exists team;
+drop table if exists game;
+drop table if exists drive;
+drop table if exists play;
+set foreign_key_checks = 1;
+
+create table if not exists team (
+	team_id					integer not null auto_increment,
+    team_abbr				char(3) not null,
+    team_name				varchar(64) not null,
+    team_city				varchar(64) not null,
+    
+    primary key (team_id)
+);
+
 create table if not exists game (
-	
-    /*Game Properties*/
-    game_id					integer not null auto_increment,
-    gamecenter_key			varchar(12) not null,
+	game_id					integer not null auto_increment,
+    game_eid				varchar(10) not null,
     
-    game_week				tinyint not null,
-    game_year				year(4) not null,
-    game_type				char(4) not null,
-    game_date				date not null,
-    game_start_time			time not null,
-    
-    /*Home Team*/
-    home_abbr				char(4) not null,
-    home_name				varchar(128) not null,
+    home_team_id			integer not null,
     home_score_final		smallint unsigned not null,
     home_score_q1 			smallint unsigned not null,
     home_score_q2 			smallint unsigned not null,
@@ -32,9 +38,7 @@ create table if not exists game (
     home_total_punt_yards	smallint not null,
     home_total_punt_avg		smallint not null,
     
-    /*Away Team*/
-    away_abbr				char(4) not null,
-    away_name				varchar(128) not null,
+    away_team_id			integer not null,
     away_score_final		smallint unsigned not null,
     away_score_q1 			smallint unsigned not null,
     away_score_q2 			smallint unsigned not null,
@@ -54,52 +58,76 @@ create table if not exists game (
     away_total_punt_yards	smallint not null,
     away_total_punt_avg		smallint not null,
     
-    primary key (game_id)
+    game_week				tinyint not null,
+    game_year				year(4) not null,
+    game_type				char(4) not null,
+    game_date				date not null,
+    game_start_time			time not null,
     
-)engine=InnoDB;
+    primary key (game_id),
+    
+    foreign key (home_team_id)
+		references team(team_id),
+        
+	foreign key (away_team_id)
+		references team(team_id)
+);
 
 create table if not exists drive (
-	
-    drive_id				integer not null auto_increment,
-    game_id					integer not null,
+	drive_id				integer not null auto_increment,
+
+	game_id					integer not null,
+    team_id					integer not null,
     
-    start_quarter			smallint not null,
-    start_time				time not null,
-    start_position			smallint not null,
+    drive_pos_time			time not null,
+    drive_total_plays 		tinyint unsigned not null,
+    drive_first_downs		tinyint unsigned not null,
+    drive_yards_gained		tinyint unsigned not null,
+    drive_yards_pen			tinyint not null,
+    drive_result			varchar(32) not null,
+    			
+	drive_start_time		time not null,
+    drive_start_quarter		tinyint unsigned not null,
+    drive_start_position	varchar(10) not null,
     
-    end_quarter				smallint not null,
-    end_time				time not null,
-    end_position			smallint not null,
+    drive_end_time			time not null,
+    drive_end_quarter		tinyint unsigned not null,
+    drive_end_position 		varchar(10) not null,
     
-    pos_team_abbr			char(4) not null,
-    pos_time				time not null,
-    
-    first_downs				smallint not null,
-    number_plays			smallint not null,
-    yards_gained			smallint not null,
-    penalty_yards			smallint not null,
-    result					varchar(64) not null,
-    
-	primary key (drive_id),
+    primary key (drive_id),
     
     foreign key (game_id)
-		references game(game_id)
-        on update cascade
-		on delete restrict
-    
-)engine=InnoDB;
+		references game(game_id),
+	
+    foreign key (team_id)
+		references team(team_id)
+);
 
 create table if not exists play (
-	
-    play_id					integer not null auto_increment,
-    game_id					integer not null,
+	play_id					integer not null auto_increment,
+	game_id 				integer not null,
+    team_id					integer not null,
     drive_id				integer not null,
-    
-    pos_team_abbr			char(4) not null,
-    
-    play_quarter			smallint not null,
-    play_down				smallint not null,
-    play_time				time not null,
+
+	play_time				time not null,
+    play_team_position		tinyint not null,
+    play_down				tinyint not null,
+    play_yds_to_first		tinyint unsigned not null,
     play_description		varchar(256) not null,
-    play_note 				varchar(64) not null
+    play_note				varchar(64) not null,
+    
+    play_fd					tinyint not null,
+    play_pass_fd			tinyint not null,
+    play_rush_fd			tinyint not null,
+    
+    play_penalty			tinyint not null,
+    play_penalty_fd			tinyint not null,
+    play_penalty_yds		tinyint not null,
+    
+    
+    
+    primary key (play_id),
+    
+    foreign key (game_id, drive_id, team_id)
+		references drive(game_id, drive_id, team_id)
 );

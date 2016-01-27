@@ -140,7 +140,4 @@ create table Game_Drive (
     end_team			char(4),
     
     primary key (drive_id)
-    
-    foreign key 
-    
 );
