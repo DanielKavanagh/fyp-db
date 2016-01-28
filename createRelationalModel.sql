@@ -174,14 +174,58 @@ create table if not exists play (
     
     Description: Holds the aggregate statistics for a particular play. Has a one-to-one
 	relationship with the play table. Prevents the need to perform aggregation
-    multiple times.
+    multiple times. Has an attribute for each statistic a play can have.
+    
+    Play Categories:
+		- Passing
+        - Rushing
+        - Receiving
+        - Fumbles
+        - Kicking
+        - Punting
+        - Kick Return
+        - Punt Return 
+        - Defense
+        - Penalty
 */
 
 create table if not exists agg_play (
-	game_id			integer not null,
-    drive_id		integer not null,
-    play_id			integer not null,
+	game_id					integer not null,
+    drive_id				integer not null,
+    play_id					integer not null,
     
+    passing_att				tinyint(1) not null,
+    passing_cmp				tinyint(1) not null,
+    passing_cmp_air_yds		smallint not null,
+    passing_cmp_tot_yds		smallint not null,
+    passing_incmp			tinyint(1) not null,
+    passing_incmp_air_yds	smallint,
+    passing_int				tinyint(1) not null,
+    passing_sack			tinyint(1) not null,
+    passing_sack_yds		smallint not null,
+    passing_td				tinyint(1) not null,
+    passing_twopt_att		tinyint(1) not null,
+    passing_twopt_cmp		tinyint(1) not null,
+	passing_twopt_fail		tinyint(1) not null,
+
+	
+	rushing_att				tinyint(1) not null,
+    rushing_yds				smallint not null,
+    rushing_loss			tinyint(1) not null,
+    rushing_loss_yds		smallint not null,
+    rushing_td				tinyint(1) not null,
+    rushing_twopt_att		tinyint(1) not null,
+    rushing_two_point_cmp	tinyint(1) not null,
+	rushing_two_point_fail	tinyint(1) not null,
+
+    
+    receiving_rec			tinyint(1) not null,
+    receiving_target		tinyint(1) not null,
+    receiving_yac_yds		smallint not null,
+    receiving_tot_yds		smallint not null,
+    receiving_twopt_att		tinyint(1) not null,
+    receiving_twopt_cmp		tinyint(1) not null,
+    receiving_twopt_fail	tinyint(1) not null,
     
     primary key (game_id, drive_id, play_id),
     
