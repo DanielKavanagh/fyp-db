@@ -1,7 +1,9 @@
 -- Create Relational Model Tables
+drop table if exists agg_play;
+drop table if exists player_play;
+drop table if exists play;
 drop table if exists drive;
 drop table if exists game;
-drop table if exists play;
 drop table if exists team;
 drop table if exists player;
 
