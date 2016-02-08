@@ -4,15 +4,17 @@ drop table if exists player_play;
 drop table if exists play;
 drop table if exists drive;
 drop table if exists game;
-drop table if exists team;
 drop table if exists player;
+drop table if exists team;
 
 create table if not exists team (
-	team_id			integer not null,
+	team_id			integer not null auto_increment,
     
     team_abbr		char(4) not null,
     team_name		varchar(128) not null,
     team_city		varchar(64) not null,
+    team_division	varchar(10) not null,
+    team_conference	char(3) not null,
     
     primary key (team_id)
 );
@@ -40,7 +42,7 @@ create table if not exists player (
 );
 
 create table if not exists game (
-	game_id					integer not null,
+	game_id					integer not null auto_increment,
     game_eid				varchar(10) not null,
     
     home_team_id			integer not null,
