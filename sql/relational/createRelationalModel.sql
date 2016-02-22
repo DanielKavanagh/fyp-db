@@ -20,16 +20,16 @@ create table if not exists team (
 );
 
 create table if not exists player (
-	player_id			integer auto_increment not null,
+	player_id			integer not null,
     team_id				integer not null,
     			
-    player_first_name	varchar(64) not null,
+	player_first_name	varchar(64) not null,
     player_last_name	varchar(64) not null,
     player_position		char(4) not null,
-    player_dob			date not null,
+    player_dob			varchar(64) not null,
     player_weight_lb	smallint unsigned not null,
     player_height_cm	smallint unsigned not null,
-    player_college		varchar(64),
+    player_college		varchar(64) not null,
     player_years_exp	tinyint unsigned not null,
     player_uniform_num	tinyint unsigned not null,
     player_status		varchar(32) not null,
