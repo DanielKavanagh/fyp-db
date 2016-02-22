@@ -7,7 +7,7 @@ insert into team (team_abbr, team_name, team_city, team_division, team_conferenc
 -- AFC South
 insert into team (team_abbr, team_name, team_city, team_division, team_conference) values ('HOU', 'Houston Texans', 'Houston', 'AFC South', 'AFC');
 insert into team (team_abbr, team_name, team_city, team_division, team_conference) values ('IND', 'Indianapolis Colts', 'Indianapolis', 'AFC South', 'AFC');
-insert into team (team_abbr, team_name, team_city, team_division, team_conference) values ('JAX', 'Jacksonville Jaguars', 'Jacksonville', 'AFC South', 'AFC');
+insert into team (team_abbr, team_name, team_city, team_division, team_conference) values ('JAC', 'Jacksonville Jaguars', 'Jacksonville', 'AFC South', 'AFC');
 insert into team (team_abbr, team_name, team_city, team_division, team_conference) values ('TEN', 'Tennessee Titans', 'Tennessee', 'AFC South', 'AFC');
 
 -- AFC East

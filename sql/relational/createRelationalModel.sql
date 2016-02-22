@@ -23,7 +23,7 @@ create table if not exists player (
 	player_id			integer not null,
     team_id				integer not null,
     			
-	player_first_name	varchar(64) not null,
+    player_first_name	varchar(64) not null,
     player_last_name	varchar(64) not null,
     player_position		char(4) not null,
     player_dob			varchar(64) not null,
@@ -43,7 +43,7 @@ create table if not exists player (
 
 create table if not exists game (
 	game_id					integer not null auto_increment,
-    game_eid				varchar(10) not null,
+    game_eid				varchar(10) not null unique,
     
     home_team_id			integer not null,
     home_score_final		smallint unsigned not null,
@@ -59,7 +59,7 @@ create table if not exists game (
     home_total_rush_yards 	smallint not null,
     home_total_pens			smallint not null,
     home_total_pen_yards	smallint not null,
-    home_time_of_pos		time not null,
+    home_time_of_pos		varchar(10) not null,
     home_turnovers			smallint not null,
     home_total_punts		smallint not null,
     home_total_punt_yards	smallint not null,
@@ -79,7 +79,7 @@ create table if not exists game (
     away_total_rush_yards 	smallint not null,
     away_total_pens			smallint not null,
     away_total_pen_yards	smallint not null,
-    away_time_of_pos		time not null,
+    away_time_of_pos		varchar(10) not null,
     away_turnovers			smallint not null,
     away_total_punts		smallint not null,
     away_total_punt_yards	smallint not null,
