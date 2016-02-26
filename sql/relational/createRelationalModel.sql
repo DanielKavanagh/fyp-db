@@ -21,12 +21,12 @@ create table if not exists team (
 
 create table if not exists player (
 	player_id			integer not null,
-    gsis				integer not null,
+   
     team_id				integer not null,
-    			
-    first_name	varchar(64) not null,
-    last_name	varchar(64) not null,
-    position		char(4) not null,
+    
+    first_name		varchar(64) not null,
+    last_name		varchar(64) not null,
+	position	char(4) not null,
     dob			varchar(64) not null,
     weight_lb	smallint unsigned not null,
     height_cm	smallint unsigned not null,
@@ -35,6 +35,7 @@ create table if not exists player (
     uniform_num	tinyint unsigned not null,
     status		varchar(32) not null,
     profile_url	varchar(512) not null,
+     gsis				varchar(16) not null,
     
     primary key (player_id),
     
