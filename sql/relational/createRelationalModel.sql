@@ -150,21 +150,21 @@ create table if not exists play (
     type_id					integer not null,
     type_description		varchar(32) not null,
     
-	first_down				tinyint(1) not null,
-    rushing_first_down		tinyint(1) not null,
-    passing_first_down		tinyint(1) not null,
+	first_down				tinyint(1) not null DEFAULT 0,
+    rushing_first_down		tinyint(1) not null DEFAULT 0,
+    passing_first_down		tinyint(1) not null DEFAULT 0,
     
-    penalty					tinyint(1) not null,
-    penalty_first_down		tinyint(1) not null,
+    penalty					tinyint(1) not null DEFAULT 0,
+    penalty_first_down		tinyint(1) not null DEFAULT 0,
     
-    third_down_att			tinyint(1) not null,
-    third_down_cmp			tinyint(1) not null,
+    third_down_att			tinyint(1) not null DEFAULT 0,
+    third_down_cmp			tinyint(1) not null DEFAULT 0,
     
-    fourth_down_att			tinyint(1) not null,
-    fourth_down_cmp			tinyint(1) not null,
+    fourth_down_att			tinyint(1) not null DEFAULT 0, 
+    fourth_down_cmp			tinyint(1) not null DEFAULT 0,
     
-    timeout					tinyint(1) not null,
-    xp_aborted				tinyint(1) not null,
+    timeout					tinyint(1) not null DEFAULT 0,
+    xp_aborted				tinyint(1) not null DEFAULT 0,
     
     primary key (game_id, drive_id, play_id),
     
