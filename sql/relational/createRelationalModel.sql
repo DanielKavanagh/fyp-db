@@ -20,7 +20,7 @@ create table if not exists team (
 );
 
 create table if not exists player (
-	player_id				integer not null,
+	player_id				integer not null auto_increment,
     team_id					integer not null,
     
     player_first_name		varchar(64) not null,
