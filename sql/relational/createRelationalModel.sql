@@ -146,10 +146,7 @@ create table if not exists play (
     
     play_description		varchar(128) not null,
     play_note				varchar(64),
-    
-    type_id					integer not null,
-    type_description		varchar(32) not null,
-    
+        
 	first_down				tinyint(1) not null default 0,
     rushing_first_down		tinyint(1) not null default 0,
     passing_first_down		tinyint(1) not null default 0,
