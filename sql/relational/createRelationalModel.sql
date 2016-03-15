@@ -4,8 +4,8 @@ drop table if exists player_play;
 drop table if exists play;
 drop table if exists drive;
 drop table if exists game;
-drop table if exists player;
-drop table if exists team;
+-- drop table if exists player;
+-- drop table if exists team;
 
 create table if not exists team (
 	team_id					integer not null auto_increment,
@@ -322,6 +322,7 @@ create table if not exists player_play (
     play_id			integer not null,
     player_id		integer not null,
     team_id			integer not null,
+    sequence_num	integer not null,
     
     passing_att				smallint not null default 0,
     passing_cmp				smallint not null default 0,
