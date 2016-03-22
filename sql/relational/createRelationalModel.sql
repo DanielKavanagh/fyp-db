@@ -108,10 +108,11 @@ create table if not exists drive (
     team_id					integer not null,
     
     drive_pos_time			time not null,
-    drive_total_plays 		tinyint unsigned not null,
-    drive_first_downs		tinyint unsigned not null,
-    drive_yards_gained		tinyint unsigned not null,
-    drive_yards_pen			tinyint not null,
+    drive_total_plays 		smallint unsigned not null,
+    drive_off_plays			smallint unsigned not null,
+    drive_first_downs		smallint unsigned not null,
+    drive_yards_gained		smallint unsigned not null,
+    drive_yards_pen			smallint not null,
     drive_result			varchar(32) not null,
     			
 	drive_start_time		time not null,
