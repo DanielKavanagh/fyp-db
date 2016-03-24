@@ -21,6 +21,7 @@ drop procedure if exists overallAverageYardsPerPlay//
 drop procedure if exists homeScoringEfficiency//
 drop procedure if exists awayScoringEfficiency//
 drop procedure if exists overallScoringEfficiency//
+drop procedure if exists overallHomeFieldAdvantage//
 
 /*Aggregates the home win rate (using the last 8 samples) of a team for a given game*/
 create procedure aggregateHomeTeamWinRate(in teamID int, in gameID int, in numGames int, out winRate float)
@@ -272,9 +273,7 @@ begin
     where d.team_id = teamID
     and (d.drive_result = "Touchdown" or d.drive_result = "Field Goal")
     into scoringDrives;
-        
-	select scoringDrives;
-        
+                
 	select count(*) from (
 		select * from game
 		where home_team_id = teamID
@@ -284,9 +283,7 @@ begin
 	join drive d on g.game_id = d.game_id
     where d.team_id = teamID
     into totalDrives;
-    
-    select totalDrives;
-    
+        
     select scoringDrives / totalDrives into homeEfficiency;
 end //
 
@@ -306,9 +303,7 @@ begin
     where d.team_id = teamID
     and (d.drive_result = "Touchdown" or d.drive_result = "Field Goal")
     into scoringDrives;
-        
-	select scoringDrives;
-        
+                
 	select count(*) from (
 		select * from game
 		where away_team_id = teamID
@@ -318,9 +313,7 @@ begin
 	join drive d on g.game_id = d.game_id
     where d.team_id = teamID
     into totalDrives;
-    
-    select totalDrives;
-    
+        
     select scoringDrives / totalDrives into awayEfficiency;
 end //
 
@@ -332,7 +325,32 @@ begin
 
 	select (@homeEfficiency + @awayEfficiency) / 2 into overallEfficiency;
 end //
+
+create procedure overallHomeFieldAdvantage(in teamID int, in gameID int,
+	out hfa float)
+begin
+	declare homePointDifferential float;
+    declare awayPointDifferential float;
+         
+	select (sum(home_score_final) - sum(away_score_final)) / count(*) from game
+    where home_team_id = teamID
+    and game_id < gameID
+    into homePointDifferential;
+    
+    select (sum(away_score_final) - sum(home_score_final)) / count(*) from game
+    where away_team_id = teamID
+    and game_id < gameID
+    into awayPointDifferential;
+    
+    select (homePointDifferential - awayPointDifferential) into hfa;
+end //
+
 delimiter ;
+
+
+
+call overallHomeFieldAdvantage(31, 1792, @hfa);
+select @hfa;
 
 -- call overallScoringEfficiency(26, 1792, 16, @a);
 -- select @a;
