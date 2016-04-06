@@ -22,6 +22,7 @@ drop procedure if exists homeScoringEfficiency//
 drop procedure if exists awayScoringEfficiency//
 drop procedure if exists overallScoringEfficiency//
 drop procedure if exists overallHomeFieldAdvantage//
+drop procedure if exists teamOverallWinrate//
 
 /*Aggregates the home win rate (using the last 8 samples) of a team for a given game*/
 create procedure aggregateHomeTeamWinRate(in teamID int, in gameID int, in numGames int, out winRate float)
@@ -89,16 +90,17 @@ begin
     order by game_eid desc
     into awayTeamWinRate;
 end //
-create procedure aggregateHomeTurnoverRate(in teamID int, in gameID int,
-	in numGames int, out turnoverRate float)
-begin
-	select sum(home_turnovers) / count(*) from (select * from game
-		where home_team_id = teamID
-        and game_id <= gameID 
-        order by game_id desc
-        limit numGames) as lastHomeGames
-	into turnoverRate;
-end //
+
+	create procedure aggregateHomeTurnoverRate(in teamID int, in gameID int,
+		in numGames int, out turnoverRate float)
+	begin
+		select sum(home_turnovers) / count(*) from (select * from game
+			where home_team_id = teamID
+			and game_id <= gameID 
+			order by game_id desc
+			limit numGames) as lastHomeGames
+		into turnoverRate;
+	end //
 
 create procedure aggregateAwayTurnoverRate(in teamID int, in gameID int,
 	in numGames int, out turnoverRate float)
@@ -120,23 +122,6 @@ begin
     select (@homeTurnoverRate + @awayTurnoverRate) / 2
     into turnoverRate;
 end //
-
--- create procedure homeScoringEfficiency(in teamID int, in gameID int,
--- 	in numGames int)
--- begin
---     
--- 	select 1 - (lastHomeGames.home_turnovers + lastHomeGames.home_total_punts) / count(d.game_id)
--- 		as scoring_efficiency
---     from (select * from game
--- 		where home_team_id = teamID
--- 		and game_id <= gameID
--- 		order by game_id desc
--- 		limit numGames) as lastHomeGames
--- 	left join drive d on lastHomeGames.game_id = d.game_id
---     where d.team_id = teamID
---     group by lastHomeGames.game_id
---     order by lastHomeGames.game_id desc;    
--- end //
 
 create procedure homeTimeOfPossession(in teamID int, in gameID int,
 	in numGames int, out topRate float)
@@ -179,46 +164,48 @@ begin
     select (@homeAvgTop + @awayAvgTop) / 2 into overallTop;    
 end //
 
-create procedure homeThirdAndFourthConversionRate(in teamID int, in gameID int,
-	in numGames int, out conversionRate float)
-begin
-	select (sum(p.third_down_cmp) + sum(p.fourth_down_att)) / (sum(p.third_down_att) + sum(p.fourth_down_att)) as conversionRate from (
-		select * from game
-        where home_team_id = teamID
-        and game_id < gameID
-        order by game_id desc
-        limit numGames) as lastGames
-	join drive d on lastGames.game_id = d.game_id
-    join play p on (d.drive_id = p.drive_id and lastGames.game_id = p.game_id)
-    where p.team_id = teamID
-    and (p.third_down_att = 1 or p.fourth_down_att = 1)
-    into conversionRate;
-end //
+	create procedure homeThirdAndFourthConversionRate(in teamID int, in gameID int,
+		in numGames int, out conversionRate float)
+	begin
+		select (sum(p.third_down_cmp) + sum(p.fourth_down_cmp)) / (sum(p.third_down_att)
+			+ sum(p.fourth_down_att)) as conversionRate from (
+			select * from game
+			where home_team_id = teamID
+			and game_id < gameID
+			order by game_id desc
+			limit numGames) as lastGames
+		join drive d on lastGames.game_id = d.game_id
+		join play p on (d.drive_id = p.drive_id and lastGames.game_id = p.game_id)
+		where p.team_id = teamID
+		and (p.third_down_att = 1 or p.fourth_down_att = 1)
+		into conversionRate;
+	end //
 
-create procedure awayThirdAndFourthConversionRate(in teamID int, in gameID int,
-	in numGames int, out conversionRate float)
-begin
-	select (sum(p.third_down_cmp) + sum(p.fourth_down_att)) / (sum(p.third_down_att) + sum(p.fourth_down_att)) as conversionRate from (
-		select * from game
-        where away_team_id = teamID
-        and game_id < gameID
-        order by game_id desc
-        limit numGames) as lastGames
-	join drive d on lastGames.game_id = d.game_id
-    join play p on (d.drive_id = p.drive_id and lastGames.game_id = p.game_id)
-    where p.team_id = teamID
-    and (p.third_down_att = 1 or p.fourth_down_att = 1)
-    into conversionRate;
-end //
+	create procedure awayThirdAndFourthConversionRate(in teamID int, in gameID int,
+		in numGames int, out conversionRate float)
+	begin
+		select (sum(p.third_down_cmp) + sum(p.fourth_down_cmp)) / (sum(p.third_down_att)
+			+ sum(p.fourth_down_att)) as conversionRate from (
+			select * from game
+			where away_team_id = teamID
+			and game_id < gameID
+			order by game_id desc
+			limit numGames) as lastGames
+		join drive d on lastGames.game_id = d.game_id
+		join play p on (d.drive_id = p.drive_id and lastGames.game_id = p.game_id)
+		where p.team_id = teamID
+		and (p.third_down_att = 1 or p.fourth_down_att = 1)
+		into conversionRate;
+	end //
 
-create procedure overallThirdAndFourthConversionRate(in teamID int, in gameID int,
-	in numGames int, out conversionRate float)
-begin
-	call homeThirdAndFourthConversionRate(teamID, gameID, numGames / 2, @homeRate);
-    call awayThirdAndFourthConversionRate(teamID, gameID, numGames / 2, @awayRate);
-    
-    select (@homeRate + @awayRate) / 2 into conversionRate;
-end //
+	create procedure overallThirdAndFourthConversionRate(in teamID int, in gameID int,
+		in numGames int, out conversionRate float)
+	begin
+		call homeThirdAndFourthConversionRate(teamID, gameID, numGames / 2, @homeRate);
+		call awayThirdAndFourthConversionRate(teamID, gameID, numGames / 2, @awayRate);
+		
+		select (@homeRate + @awayRate) / 2 into conversionRate;
+	end //
 
 create procedure homeAverageYardsPerPlay(in teamID int, in gameID int,
 	in numGames int, out averageYards float)
@@ -345,45 +332,36 @@ begin
     select (homePointDifferential - awayPointDifferential) into hfa;
 end //
 
+create procedure teamOverallWinrate(in teamID int, in gameID int, out wr float)
+begin
+	declare homeWins float;
+    declare awayWins float;
+    declare totalHomeGames int;
+    declare totalAwayGames int;
+    
+    select count(*) from game
+    where home_team_id = teamID
+    and game_id < gameID
+    into totalHomeGames;
+    
+    select count(*) from game
+	where away_team_id = teamID
+    and game_id < gameID
+    into totalAwayGames;
+    
+	select count(*) from game
+	where home_team_id = teamID
+	and home_score_final > away_score_final
+    and game_id < gameID
+    into homeWins;
+    
+    select count(*) from game
+	where away_team_id = teamID
+    and away_score_final > home_score_final
+    and game_id < gameID
+    into awayWins;
+    
+    select (homeWins + awayWins) / (totalHomeGames + totalAwayGames) into wr;
+    
+end //
 delimiter ;
-
-
-
-call overallHomeFieldAdvantage(31, 1792, @hfa);
-select @hfa;
-
--- call overallScoringEfficiency(26, 1792, 16, @a);
--- select @a;
--- 
--- call overallAverageYardsPerPlay(1, 1792, 16, @a);
--- select @a;
--- call awayAverageYardsPerPlay(4, 1792, 8, @a);
--- select @a;
-
--- call overallThirdAndFourthConversionRate(28, 1792, 16, @result);
--- select @result;
--- 
--- call homeScoringEfficiency(20, 1792, 8);
--- 
--- call homeWinRateAgainstAway(25, 26, 1792, @wr);
--- select @wr;
--- call overallTimeOfPossession(26, 1792, 16, @overallTop);
--- select @overallTop;
---
--- -- call aggregateOverallTurnoverRate(13, 1512, 16, @otr);
--- select @otr;
--- 
--- call aggregateHomeTurnoverRate(1, 1792, 8, @htr);
--- select @htr;
--- call aggregateAwayTurnoverRate(1, 1792, 8, @atr);
--- select @atr;
--- 
--- call aggregateWinRateAgainstTeam(30, 32, 1792, @htwr, @atwr);
--- select @htwr as home_team_wr_against_away;
--- select @atwr as away_team_wr_against_home;
--- 
--- call aggregateHomeTeamWinRate(3, 1792, 8, @hwr);
--- select @hwr as home_win_rate;
--- call aggregateAwayTeamWinRate(3, 1792, 8, @awr);
--- select @awr as away_win_rate;
--- call aggregateOverallTeamWinRate(3, 1792, 16);

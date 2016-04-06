@@ -1,11 +1,12 @@
 -- Create Relational Model Tables
-drop table if exists agg_play;
-drop table if exists player_play;
-drop table if exists play;
-drop table if exists drive;
-drop table if exists game;
+-- drop table if exists agg_play;
+-- drop table if exists player_play;
+-- drop table if exists play;
+-- drop table if exists drive;
+-- drop table if exists game;
 -- drop table if exists player;
 -- drop table if exists team;
+drop table if exists prediction;
 
 create table if not exists team (
 	team_id					integer not null auto_increment,
@@ -99,6 +100,23 @@ create table if not exists game (
 		references team(team_id),
         
 	foreign key (away_team_id)
+		references team(team_id)
+);
+
+create table if not exists prediction (
+	prediction_id 			integer not null auto_increment,
+    game_id					integer not null,
+    
+    predicted_winner_id		integer not null,
+    actual_winner_id		integer not null,
+    probability				float not null,
+    
+    primary key (prediction_id),
+    
+    foreign key (predicted_winner_id)
+		references team(team_id),
+        
+	foreign key (actual_winner_id)
 		references team(team_id)
 );
 
